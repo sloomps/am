@@ -768,4 +768,4 @@ app.get('/', (req, res) => {
 });
 app.listen(config.port, () => console.log(`🌐 السيرفر الويب يعمل على المنفذ: ${config.port}`));
 
-client.login('TOKEN_HERE'); // لا تنسى وضع توكن البوت الخاص بك هنا ليعمل بنجاح
+client.login(process.env.DISCORD_TOKEN); // لا تنسى وضع توكن البوت الخاص بك هنا ليعمل بنجاح
