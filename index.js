@@ -143,4 +143,4 @@ app.get('/', (req, res) => {
 });
 app.listen(config.port, () => console.log(`🌐 لوحة التحكم تعمل على المنفذ: ${config.port}`));
 
-client.login(config.token);
+client.login(config.token || process.env.TOKEN);
