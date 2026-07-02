@@ -10,14 +10,13 @@ const client = new Client({
     ]
 });
 
-// --- إعدادات البوت (يمكنك تغييرها من هنا مباشرة) ---
+// --- الإعدادات العامة (التوكن يتم قراءته من السيرفر للحماية) ---
 const config = {
-    token: "ضع_توكن_البوت_هنا",
     prefix: "!",
-    port: 3000
+    port: process.env.PORT || 3000
 };
 
-// 🛡️ نظام الحماية المتقدم لمنع الانهيار (Anti-Crash)
+// 🛡️ نظام الحماية المتقدم ومنع الانهيار (Anti-Crash)
 process.on('unhandledRejection', (reason, p) => { console.error(' [حماية] خطأ غير معالج:', reason, p); });
 process.on("uncaughtException", (err, origin) => { console.error(' [حماية] استثناء غير ممسوك:', err, origin); });
 
@@ -27,25 +26,25 @@ client.once('ready', () => {
     client.user.setActivity('نظام متكامل | !مساعدة', { type: 3 });
 });
 
-// 📨 استقبال الأوامر والتحقق منها (كل الأوامر مدمجة هنا)
+// 📨 نظام استقبال ومعالجة الأوامر باللغة العربية
 client.on('messageCreate', async message => {
     if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
     const args = message.content.slice(config.prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
-    // 1️⃣ أمر المساعدة
+    // 1️⃣ أمر المساعدة المتطور والمعاصر
     if (command === 'مساعدة') {
         const helpEmbed = new EmbedBuilder()
-            .setColor('#43B581')
+            .setColor('#5865F2')
             .setTitle('✨ لوحة أوامر النظام المتكامل ✨')
             .setDescription('مرحباً بك! إليك دليل الأوامر الشامل المنظم والمريح للعين:')
             .addFields(
-                { name: '🛡️ نظام الحماية والإدارة', value: '`!حظر` | `!طرد` | `!مسح` | `!ميوت`', inline: false },
+                { name: '🛡️ نظام الإدارة والحماية', value: '`!حظر` | `!طرد` | `!مسح` | `!ميوت`', inline: false },
                 { name: '🎫 نظام التذاكر المتطور', value: '`!انشاء-تذاكر`', inline: false },
                 { name: '🎛️ الإعدادات والتحكم', value: '`!داشبورد`', inline: false }
             )
-            .setFooter({ text: 'تمت البرمجة بأحدث معايير الحماية والتنسيق المعاصر' })
+            .setFooter({ text: 'تمت البرمجة بأحدث معايير التنسيق المعاصر' })
             .setTimestamp();
 
         return message.reply({ embeds: [helpEmbed] });
@@ -77,20 +76,17 @@ client.on('messageCreate', async message => {
     // 3️⃣ أمر رابط لوحة التحكم (Dashboard)
     if (command === 'داشبورد') {
         const embed = new EmbedBuilder()
-            .setColor('#7289DA')
+            .setColor('#57F287')
             .setTitle('🎛️ لوحة التحكم واختصارات الرومات والرولات')
-            .setDescription('يمكنك إدارة الرومات المفعلة والاختصارات مباشرة وبشكل معاصر ومريح عبر الرابط التالي:')
-            .addFields({ name: '🔗 رابط الدخول المباشر:', value: `📊 [اضغط هنا لفتح اللوحة](http://localhost:${config.port}/)` })
-            .setFooter({ text: 'مؤمن بنظام تشفير داخلي حامي للملفات' })
+            .setDescription('يمكنك إدارة الرومات المفعلة والاختصارات مباشرة وبشكل معاصر ومريح عبر الرابط الموفر من Railway بعد التشغيل.')
+            .setFooter({ text: 'مؤمن بنظام حماية داخلي' })
             .setTimestamp();
 
         return message.reply({ embeds: [embed] });
     }
-
-    // يمكنك إضافة أوامر إضافية هنا بنفس الطريقة (if command === 'اسم_الأمر')
 });
 
-// 🎫 نظام التفاعل مع أزرار التذاكر (Tickets)
+// 🎫 نظام التفاعل وتشغيل أزرار التذاكر (Tickets)
 client.on('interactionCreate', async interaction => {
     if (!interaction.isButton()) return;
 
@@ -126,21 +122,22 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// 🌐 لوحة التحكم (Dashboard) - خادم الويب
+// 🌐 لوحة التحكم (Dashboard Web Server) المتوافقة مع منفذ Railway تلقائياً
 const app = express();
 app.get('/', (req, res) => {
     res.send(`
         <body style="font-family: Arial; text-align: center; background: #2f3136; color: white; padding-top: 50px;">
             <h1>🎛️ لوحة تحكم البوت المتكاملة</h1>
-            <p>النظام نشط ويعمل باللغة العربية بالكامل من ملف واحد.</p>
+            <p>النظام نشط ويعمل على منصة Railway بالكامل.</p>
             <div style="background: #202225; display: inline-block; padding: 20px; border-radius: 8px;">
                 <h3>📊 إحصائيات سريعة:</h3>
                 <p>حالة البوت: متصل ومؤمن 🟢</p>
-                <p>الاختصارات والرومات المفعّلة يتم التحكم بها عبر السيرفر مباشرة.</p>
+                <p>يتم التحكم بالاختصارات والرومات عبر السيرفر مباشرة.</p>
             </div>
         </body>
     `);
 });
 app.listen(config.port, () => console.log(`🌐 لوحة التحكم تعمل على المنفذ: ${config.port}`));
 
-client.login(config.token || process.env.TOKEN);
+// قراءة التوكن من نظام الحماية الخاص بـ Railway لضمان عدم حدوث خطأ Authorization
+client.login(process.env.TOKEN);
