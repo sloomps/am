@@ -189,4 +189,4 @@ const app = express();
 app.get('/', (req, res) => res.send('Elite Bot is Online!'));
 app.listen(3000);
 
-client.login("ضع_التوكن_هنا");
+client.login(process.env.DISCORD_TOKEN || config.token);
