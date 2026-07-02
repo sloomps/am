@@ -26,23 +26,23 @@ const config = {
     port: process.env.PORT || 3000
 };
 
-// قواعد البيانات المؤقتة في الذاكرة
+// قواعد البيانات المؤقتة في الذاكرة لتخزين الحالات، الليفل، والتذاكر
 const disabledCommands = new Set(); 
 const levelsDatabase = new Map(); 
 const ticketCreators = new Map(); 
 
-// 🛡️ نظام منع الانهيار وحماية البوت
+// 🛡️ نظام منع الانهيار وحماية البوت من التوقف المفاجئ
 process.on('unhandledRejection', (reason, p) => { console.error(' [حماية] خطأ غير معالج:', reason); });
 process.on("uncaughtException", (err, origin) => { console.error(' [حماية] استثناء خارجي:', err); });
 
 client.once('ready', () => {
-    console.log(`🚀 تم تشغيل النظام الكامل بنجاح: ${client.user.tag}`);
+    console.log(`🚀 تم تشغيل النظام المتكامل والضخم بنجاح: ${client.user.tag}`);
 });
 
 client.on('messageCreate', async message => {
     if (message.author.bot || !message.guild) return;
 
-    // ================= 📈 نظام الليفل التلقائي =================
+    // ================= 📈 نظام الليفل التلقائي والشات الحماسي =================
     const userId = message.author.id;
     if (!levelsDatabase.has(userId)) {
         levelsDatabase.set(userId, { xp: 0, level: 1 });
@@ -72,7 +72,7 @@ client.on('messageCreate', async message => {
     const args = message.content.slice(config.prefix.length).trim().split(/ +/);
     const commandInput = args.shift().toLowerCase();
 
-    // ================= 🔀 نظام الاختصارات والتحكم الكامل =================
+    // ================= 🔀 نظام الاختصارات والتحكم الكامل بالأوامر =================
     const aliases = {
         'م': 'مسح',
         'ق': 'قفل',
@@ -83,17 +83,24 @@ client.on('messageCreate', async message => {
         'ب': 'بنج',
         'س': 'سرعة',
         'ص': 'صراحة',
-        'خ': 'خيروك'
+        'خ': 'خيروك',
+        'ط': 'طرد',
+        'بند': 'حظر',
+        'سجن': 'ميوت',
+        'اطلق': 'فك-ميوت',
+        'سيرفر': 'معلومات-السيرفر',
+        'انا': 'بروفايل',
+        'عالمي': 'افتار'
     };
 
     const command = aliases[commandInput] || commandInput;
 
-    // التحقق مما إذا كان الأمر معطلاً
+    // التحقق مما إذا كان الأمر معطلاً من قِبل إدارة التحكم
     if (disabledCommands.has(command) && command !== 'تحكم') {
         return message.reply('❌ **هذا الأمر معطل حالياً من قبل إدارة السيرفر!**');
     }
 
-    // 1. أمر التحكم الكامل
+    // 1. أمر التحكم الكامل بتعطيل وتفعيل الأوامر
     if (command === 'تحكم') {
         if (!message.member.permissions.has(PermissionFlagsBits.Administrator)) {
             return message.reply('❌ هذا الأمر مخصص لمديري النظام فقط.');
@@ -103,7 +110,7 @@ client.on('messageCreate', async message => {
         const action = args[1];
 
         if (!targetCmd || !['تفعيل', 'تعطيل'].includes(action)) {
-            return message.reply('📝 **الاستخدام الصحيح:** `!تحكم [اسم_الأمر] [تفعيل/تعطيل]`\nمثال: `!تحكم مسح تعطيل`');
+            return message.reply('📝 **الاستخدام الصحيح:** `!تحكم [اسم_الأمر] [تفعيل/تعطيل]`\nمثال: `!تحكم مسح تعطيل` او `!ح م تعطيل`');
         }
 
         if (action === 'تعطيل') {
@@ -144,7 +151,7 @@ client.on('messageCreate', async message => {
         return message.reply({ embeds: [levelEmbed] });
     }
 
-    // 4. أمر إنشاء نظام التذاكر المطور (!ت)
+    // 4. أمر إنشاء نظام التذاكر المطور كلياً (!ت)
     if (command === 'تذاكر') {
         if (!message.member.permissions.has(PermissionFlagsBits.Administrator)) return message.reply('❌ للمسؤولين فقط.');
 
@@ -185,13 +192,95 @@ client.on('messageCreate', async message => {
         return message.reply(`🏓 **سرعة اتصال النظام:** \`${client.ws.ping}ms\``);
     }
 
-    // 8. أمر روليت
+    // 8. أمر طرد العضو (!ط)
+    if (command === 'طرد') {
+        if (!message.member.permissions.has(PermissionFlagsBits.KickMembers)) return message.reply('❌ لا تملك صلاحية طرد الأعضاء.');
+        const member = message.mentions.members.first();
+        if (!member) return message.reply('❌ منشن العضو المراد طرده.');
+        if (!member.kickable) return message.reply('❌ لا يمكنني طرد هذا العضو (رتبته أعلى مني).');
+        
+        await member.kick(args.slice(1).join(" ") || "بدون سبب مذكور");
+        return message.reply(`✅ تم طرد العضو ${member.user.tag} بنجاح.`);
+    }
+
+    // 9. أمر الحظر / البند (!بند)
+    if (command === 'حظر') {
+        if (!message.member.permissions.has(PermissionFlagsBits.BanMembers)) return message.reply('❌ لا تملك صلاحية حظر الأعضاء.');
+        const member = message.mentions.members.first();
+        if (!member) return message.reply('❌ منشن العضو المراد حظره.');
+        if (!member.bannable) return message.reply('❌ لا يمكنني حظر هذا العضو.');
+
+        await member.ban({ reason: args.slice(1).join(" ") || "بدون سبب مذكور" });
+        return message.reply(`🛑 تم حظر العضو ${member.user.tag} نهائياً من السيرفر.`);
+    }
+
+    // 10. أمر إسكات العضو / ميوت كتابي (!سجن)
+    if (command === 'ميوت') {
+        if (!message.member.permissions.has(PermissionFlagsBits.ModerateMembers)) return message.reply('❌ لا تملك الصلاحية.');
+        const member = message.mentions.members.first();
+        if (!member) return message.reply('❌ منشن العضو المراد إسكاته.');
+        
+        // تطبيق نظام الـ Timeout لمدة 10 دقائق كميوت افتراضي
+        await member.timeout(10 * 60 * 1000, args.slice(1).join(" ") || "بدون سبب");
+        return message.reply(`🤐 تم إعطاء ميوت (تايم أوت) للعضو ${member.user.username} لمدة 10 دقائق.`);
+    }
+
+    // 11. أمر فك الميوت (!اطلق)
+    if (command === 'فك-ميوت') {
+        if (!message.member.permissions.has(PermissionFlagsBits.ModerateMembers)) return message.reply('❌ لا تملك الصلاحية.');
+        const member = message.mentions.members.first();
+        if (!member) return message.reply('❌ منشن العضو لفك الإسكات عنه.');
+        
+        await member.timeout(null);
+        return message.reply(`🔊 تم فك الميوت عن العضو ${member.user.username} بنجاح.`);
+    }
+
+    // 12. أمر معلومات السيرفر (!سيرفر)
+    if (command === 'معلومات-السيرفر') {
+        const serverEmbed = new EmbedBuilder()
+            .setColor('#F1C40F')
+            .setTitle(`📊 معلومات سيرفر: ${message.guild.name}`)
+            .addFields(
+                { name: '🆔 آيدي السيرفر', value: `${message.guild.id}`, inline: true },
+                { name: '👑 صاحب السيرفر', value: `<@${message.guild.ownerId}>`, inline: true },
+                { name: '👥 عدد الأعضاء', value: `${message.guild.memberCount}`, inline: true },
+                { name: '📅 تاريخ الإنشاء', value: `${message.guild.createdAt.toLocaleDateString('ar-EG')}`, inline: true }
+            )
+            .setThumbnail(message.guild.iconURL());
+        return message.reply({ embeds: [serverEmbed] });
+    }
+
+    // 13. أمر البروفايل (!انا)
+    if (command === 'بروفايل') {
+        const target = message.mentions.users.first() || message.author;
+        const profileEmbed = new EmbedBuilder()
+            .setColor('#9B59B6')
+            .setTitle(`👤 الملف الشخصي لـ ${target.username}`)
+            .setThumbnail(target.displayAvatarURL())
+            .addFields(
+                { name: '🆔 الحساب الإدخالي (ID)', value: `${target.id}` },
+                { name: '📅 تاريخ الانضمام للديسكورد', value: `${target.createdAt.toLocaleDateString('ar-EG')}` }
+            );
+        return message.reply({ embeds: [profileEmbed] });
+    }
+
+    // 14. أمر الأفتار (!عالمي)
+    if (command === 'افتار') {
+        const target = message.mentions.users.first() || message.author;
+        const avatarEmbed = new EmbedBuilder()
+            .setColor('#1ABC9C')
+            .setTitle(`🖼️ صورة حساب: ${target.username}`)
+            .setImage(target.displayAvatarURL({ size: 1024, dynamic: true }));
+        return message.reply({ embeds: [avatarEmbed] });
+    }
+
+    // 15. أمر روليت
     if (command === 'روليت') {
-        const outcomes = ['💀 تم إقصاؤك من اللعبة بالرصاصة!', '😎 محظوظ! نجوت هذه المرة.', '💥 طاخ! خسرت الحولة.'];
+        const outcomes = ['💀 تم إقصاؤك من اللعبة بالرصاصة!', '😎 محظوظ! نجوت هذه المرة.', '💥 طاخ! خسرت الجولة.'];
         return message.reply(`🎲 **نتيجتك في الروليت:** ${outcomes[Math.floor(Math.random() * outcomes.length)]}`);
     }
 
-    // 9. أمر سرعة (!س)
+    // 16. أمر سرعة (!س)
     if (command === 'سرعة') {
         const words = ['ديسكورد', 'برمجة', 'سيرفر', 'تطوير', 'بوت', 'حماية', 'إبداع'];
         const chosenWord = words[Math.floor(Math.random() * words.length)];
@@ -205,7 +294,7 @@ client.on('messageCreate', async message => {
         });
     }
 
-    // 10. أمر صراحة (!ص)
+    // 17. أمر صراحة (!ص)
     if (command === 'صراحة') {
         const questions = [
             'هل أنت راضٍ عن حياتك الحالية؟',
@@ -216,34 +305,35 @@ client.on('messageCreate', async message => {
         return message.reply(`🤔 **سؤال صراحة لك:** ${questions[Math.floor(Math.random() * questions.length)]}`);
     }
 
-    // 11. أمر خيروك (!خ)
+    // 18. أمر خيروك (!خ)
     if (command === 'خيروك') {
         const choices = [
             'لو خيروك: تعيش وحيد في جزيرة 🏝️ أو تعيش مع شخص تكرهه في قصر 🏰؟',
             'لو خيروك: تفقد القدرة على الكلام 🤐 أو تفقد القدرة على السمع 🔇؟',
-            'لو خيروك: تمتلك قوة الطيران 🦅 أو قوة الاختفاء 👻؟'
+            'لو خيروك: تمتلك قوة الطيران 🦅 أو قوة الاختفاء 👻?'
         ];
         return message.reply(`🤷‍♂️ **لو خيروك:**\n${choices[Math.floor(Math.random() * choices.length)]}`);
     }
 
-    // 12. أمر المساعدة المطور والكامل
+    // 19. أمر المساعدة المطور والكامل والشامل لكل شيء
     if (command === 'مساعدة') {
         const helpEmbed = new EmbedBuilder()
             .setColor('#2F3136')
-            .setTitle('✨ دليل الأوامر المتكامل والخرافي')
-            .setDescription('جميع الأوامر تدعم الاختصارات والتحكم الكامل بالتعطيل والتفعيل.')
+            .setTitle('✨ دليل الأوامر الشامل والضخم جداً')
+            .setDescription('تم دمج الأوامر السابقة مع النظام الجديد، وتدعم الاختصارات بالكامل.')
             .addFields(
-                { name: '⚙️ أوامر الإدارة والتحكم', value: '`!تحكم` (لتعطيل/تفعيل الأوامر)\n`!تذاكر` (أو `!ت` لانشاء نظام التذاكر)\n`!مسح` (أو `!م` لتنظيف الشات)\n`!قفل` (`!ق`) & `!فتح` (`!ف`)' },
-                { name: '📊 أوامر النظام العام', value: '`!ليفل` (أو `!ل` لعرض مستواك الحالي)\n`!بنج` (أو `!ب` لعرض سرعة الاستجابة)' },
-                { name: '🎮 أوامر التسلية والألعاب', value: '`!روليت` (لعبة الحظ)\n`!سرعة` (أو `!س` لتحدي الكتابة السريعة)\n`!صراحة` (أو `!ص` لأسئلة الصراحة)\n`!خيروك` (أو `!خ` لألعاب الخيارات)' }
+                { name: '⚙️ التحكم والإدارة العُليا', value: '`!تحكم` | `!تذاكر` (أو `!ت`)\n`!مسح` (أو `!م`)\n`!قفل` (`!ق`) & `!فتح` (`!ف`)' },
+                { name: '🛡️ الإشراف والحظر (الأوامر القديمة)', value: '`!طرد` (`!ط`) | `!حظر` (`!بند`)\n`!ميوت` (`!سجن`) | `!فك-ميوت` (`!اطلق`)' },
+                { name: '📊 المعلومات العامّة والبروفايل', value: '`!ليفل` (`!ل`) | `!بنج` (`!ب`)\n`!معلومات-السيرفر` (`!سيرفر`) | `!بروفايل` (`!انا`) | `!افتار` (`!عالمي`)' },
+                { name: '🎮 ألعاب وتسلية الشات', value: '`!روليت` | `!سرعة` (`!س`)\n`!صراحة` (`!ص`) | `!خيروك` (`!خ`)' }
             )
-            .setFooter({ text: 'البوت مجهز ومحمي بالكامل ضد الانهيار' })
+            .setFooter({ text: 'تم استرجاع وضبط كافة الأوامر والملفات البرمجية بنجاح بنسبة 100%' })
             .setTimestamp();
         return message.reply({ embeds: [helpEmbed] });
     }
 });
 
-// ================= ⚡ التفاعلات ونظام التذاكر =================
+// ================= ⚡ نظام التفاعلات وأرشفة التذاكر الفورية =================
 client.on('interactionCreate', async interaction => {
     if (interaction.isStringSelectMenu() && interaction.customId === 'ticket_select') {
         await interaction.deferReply({ ephemeral: true });
@@ -274,7 +364,7 @@ client.on('interactionCreate', async interaction => {
         const embed = new EmbedBuilder()
             .setColor('#2ECC71')
             .setTitle(`✨ تذكرة جديدة - قسم ${deptName}`)
-            .setDescription(`مرحباً بك ${interaction.user}، تم فتح تذكرتك بنجاح. اكتب تفاصيل مشكلتك وسيرد عليك الدعم الفني قريباً.\n\n🔒 **عند الانتهاء، اضغط على الزر ليتم إرسال التفاصيل لخاصك وحذف الروم.**`)
+            .setDescription(`مرحباً بك ${interaction.user}، تم فتح تذكرتك بنجاح. اكتب تفاصيل مشكلتك وسيرد عليك الدعم الفني قريباً.\n\n🔒 **عند الانتهاء، اضغط على الزر ليتم إرسال الأرشيف النصي لخاصك وحذف الروم لحمايته.**`)
             .setTimestamp();
 
         const closeBtn = new ActionRowBuilder().addComponents(
@@ -300,7 +390,7 @@ client.on('interactionCreate', async interaction => {
                 const dmEmbed = new EmbedBuilder()
                     .setColor('#E74C3C')
                     .setTitle('📋 أرشيف تذكرتك المغلقة')
-                    .setDescription(`مرحباً بك، إليك كافة تفاصيل تذكرتك بعد أن تم إغلاقها للتوثيق والمراجعة:`)
+                    .setDescription(`مرحباً بك، إليك كافة تفاصيل تذكرتك بعد أن تم إغلاقها للتوثيق والمراجعة الحصريّة:`)
                     .addFields(
                         { name: '📁 قسم الدعم', value: `\`${ticketData.department}\``, inline: true },
                         { name: '📅 تاريخ الفتح', value: `\`${ticketData.openedAt}\``, inline: true },
@@ -313,13 +403,13 @@ client.on('interactionCreate', async interaction => {
                     await member.send({ 
                         embeds: [dmEmbed],
                         files: [{
-                            attachment: Buffer.from(transcriptText || "لم يتم العثور على رسائل."),
+                            attachment: Buffer.from(transcriptText || "لم يتم العثور على أي رسائل متبادلة داخل هذه التذكرة."),
                             name: `transcript-${interaction.channel.name}.txt`
                         }]
-                    }).catch(() => console.log("⚠️ تعذر الإرسال للخاص لأن حساب العضو مغلق."));
+                    }).catch(() => console.log("⚠️ تعذر الإرسال للخاص لأن حساب العضو مغلق أو يستقبل الأصدقاء فقط."));
                 }
             } catch (err) {
-                console.error("خطأ بالأرشفة:", err);
+                console.error("خطأ بالأرشفة والخاص:", err);
             }
             ticketCreators.delete(interaction.channel.id);
         }
@@ -328,8 +418,9 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
+// تشغيل خادم الويب (Express) للبقاء حياً 24 ساعة
 const app = express();
-app.get('/', (req, res) => { res.send('<h1 style="text-align:center; padding-top:50px;">🌐 النظام الخرافي المتكامل جاهز ويعمل</h1>'); });
+app.get('/', (req, res) => { res.send('<h1 style="text-align:center; padding-top:50px; font-family:sans-serif;">🌐 النظام الضخم والخرافي جاهز بكامل ملفاته ويعمل 100%</h1>'); });
 app.listen(config.port);
 
 client.login(process.env.DISCORD_TOKEN || 'ضع_التوكن_هنا');
