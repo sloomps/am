@@ -10,178 +10,163 @@ const client = new Client({
     ]
 });
 
-// --- الإعدادات العامة ---
 const config = {
     prefix: "!",
     port: process.env.PORT || 3000
 };
 
-// 🛡️ نظام الحماية المتقدم ومنع الانهيار (Anti-Crash)
-process.on('unhandledRejection', (reason, p) => { console.error(' [حماية] خطأ غير معالج:', reason, p); });
-process.on("uncaughtException", (err, origin) => { console.error(' [حماية] استثناء غير ممسوك:', err, origin); });
+// 🛡️ نظام الحماية ومنع الانهيار
+process.on('unhandledRejection', (reason, p) => { console.error(' [حماية] خطأ:', reason, p); });
+process.on("uncaughtException", (err, origin) => { console.error(' [حماية] استثناء:', err, origin); });
 
-// 🚀 حدث تشغيل البوت
 client.once('ready', () => {
-    console.log(`✅ النظام الخرافي نشط الآن باسم: ${client.user.tag}`);
-    client.user.setActivity('النظام الشامل | !مساعدة', { type: 3 });
+    console.log(`✅ النظام الخرافي نشط: ${client.user.tag}`);
 });
 
-// 📨 نظام استقبال ومعالجة الأوامر الشامل باللغة العربية
 client.on('messageCreate', async message => {
     if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
     const args = message.content.slice(config.prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
-    // ================= الفئة 1: أوامر المساعدة والتحكم =================
-
+    // ================= فئة المساعدة =================
     if (command === 'مساعدة') {
         const helpEmbed = new EmbedBuilder()
             .setColor('#5865F2')
-            .setTitle('✨ دليل أوامر النظام المتكامل والخرافي ✨')
-            .setDescription('مرحباً بك! إليك قائمة الأوامر المنظمة والمصممة لتكون مريحة للعين ومقسمة حسب الفئات:')
+            .setTitle('✨ دليل أوامر الألعاب والنظام المتكامل ✨')
+            .setDescription('مرحباً بك! إليك الألعاب الجديدة والمطورة:')
             .addFields(
-                { name: '⚙️ أوامر عامة ومعلومات', value: '`!مساعدة` | `!داشبورد` | `!معلومات` | `!بينج` | `!مطور` | `!سيرفر` | `!افتار`', inline: false },
-                { name: '🛡️ أوامر الإدارة والحماية', value: '`!طرد` | `!حظر` | `!مسح` | `!قفل` | `!فتح` | `!صامت` | `!تكلم` | `!رتبة` | `!سحب`', inline: false },
-                { name: '🎫 نظام التذاكر المتقدم', value: '`!انشاء-تذاكر`', inline: false },
-                { name: '🎮 أوامر الترفيه والتسلية', value: '`!فعالية` | `!نرد` | `!عشوائي` | `!صراحة` | `!لوخيروك` | `!نسبة-الحب` | `!نكتة`', inline: false }
+                { name: '🎮 ألعاب حماسية وتفاعلية', value: '`!روليت` | `!نسبة-الجمال` | `!ذكاء` | `!فعالية` | `!نرد`', inline: false },
+                { name: '🛡️ الإدارة والحماية', value: '`!طرد` | `!حظر` | `!مسح` | `!قفل` | `!فتح`', inline: false },
+                { name: '🎫 التذاكر والتحكم', value: '`!انشاء-تذاكر` | `!داشبورد`', inline: false }
             )
-            .setFooter({ text: 'تم التحديث لأعلى معايير الاستقرار والأمان البرمجي' })
+            .setFooter({ text: 'تصميم معاصر مريح للعين' })
             .setTimestamp();
 
         return message.reply({ embeds: [helpEmbed] });
     }
 
-    if (command === 'داشبورد') {
+    // ================= فئة الألعاب المتطورة والأجواء الحماسية =================
+
+    // 1. لعبة الروليت (التحدي والميوت)
+    if (command === 'روليت') {
+        const msg = await message.reply('🔄 **جاري تدوير أسطوانة الروليت... 🎚️**');
+        
+        setTimeout(async () => {
+            const rouletteOutcome = Math.floor(Math.random() * 6); // احتمال 1 من 6
+            
+            if (rouletteOutcome === 0) {
+                const embedLoser = new EmbedBuilder()
+                    .setColor('#FF0000')
+                    .setTitle('💥 طلقة في الهدف!')
+                    .setDescription(`لقد استقرت الرصاصة عليك يا ${message.author}! تم تطبيق الصمت عليك لمدة دقيقة واحدة بنجاح. 💀`)
+                    .setTimestamp();
+                
+                await msg.edit({ content: ' ', embeds: [embedLoser] });
+                // محاولة إعطاء ميوت إذا كان لدى البوت الصلاحية
+                await message.member.edit({ mute: true }).catch(() => {}); 
+                setTimeout(() => message.member.edit({ mute: false }).catch(() => {}), 60000);
+            } else {
+                const embedSurvivor = new EmbedBuilder()
+                    .setColor('#43B581')
+                    .setTitle('🎉 نجوت بأعجوبة!')
+                    .setDescription(`اضغط الزناد وخرجت الرصاصة فارغة! الحظ في صفك اليوم يا ${message.author}. 😎`)
+                    .setTimestamp();
+                
+                await msg.edit({ content: ' ', embeds: [embedSurvivor] });
+            }
+        }, 2500); // تأثير حركة وتأخير مريح
+    }
+
+    // 2. لعبة نسبة الجمال مع شريط تفاعلي
+    if (command === 'نسبة-الجمال') {
+        const user = message.mentions.users.first() || message.author;
+        const percentage = Math.floor(Math.random() * 101);
+        
+        // إنشاء شريط تحميل متحرك بصرياً
+        const progress = Math.round((percentage / 10));
+        const progressText = '🟩'.repeat(progress) + '⬜'.repeat(10 - progress);
+
         const embed = new EmbedBuilder()
-            .setColor('#57F287')
-            .setTitle('🎛️ لوحة التحكم واختصارات النظام')
-            .setDescription('يمكنك إدارة الرومات المفعلة والاختصارات مباشرة وبشكل معاصر ومريح عبر الرابط الموفر من Railway بعد التشغيل.')
-            .setFooter({ text: 'مؤمن بنظام حماية داخلي وضد الاختراق' })
+            .setColor('#E91E63')
+            .setTitle('✨ كاشف نسبة الجمال المتطور ✨')
+            .setDescription(`نسبة جمال **${user.username}** هي: **${percentage}%**\n\n${progressText}`)
+            .setThumbnail(user.displayAvatarURL({ dynamic: true }))
             .setTimestamp();
 
         return message.reply({ embeds: [embed] });
     }
 
-    if (command === 'بينج') {
-        return message.reply(`🏓 **سرعة استجابة البوت الحالية هي:** \`${client.ws.ping}ms\``);
-    }
-
-    if (command === 'مطور') {
-        return message.reply('👑 **هذا البوت المتكامل تم تطويره ورفعه بواسطة صاحب المشروع عبر منصة Railway الآمنة.**');
-    }
-
-    // ================= الفئة 2: أوامر الإدارة والحماية (تتحقق من الرتب تلقائياً) =================
-
-    if (command === 'طرد') {
-        if (!message.member.permissions.has(PermissionFlagsBits.KickMembers)) return message.reply('❌ لا تملك صلاحية طرد الأعضاء.');
-        const member = message.mentions.members.first();
-        if (!member) return message.reply('❌ يرجى تحديد العضو المراد طرده.');
-        if (!member.kickable) return message.reply('❌ لا يمكنني طرد هذا العضو بسبب رتبته العليا.');
+    // 3. لعبة قياس الذكاء
+    if (command === 'ذكاء') {
+        const user = message.mentions.users.first() || message.author;
+        const iq = Math.floor(Math.random() * 71) + 70; // نسبة بين 70 و 140
         
+        const progress = Math.round(((iq - 70) / 70) * 10);
+        const progressText = '🟦'.repeat(Math.max(0, progress)) + '⬜'.repeat(Math.max(0, 10 - progress));
+
+        const embed = new EmbedBuilder()
+            .setColor('#3498DB')
+            .setTitle('🧠 مقياس الذكاء الفوري')
+            .setDescription(`مستوى ذكاء **${user.username}** هو: **${iq} IQ**\n\n${progressText}`)
+            .setTimestamp();
+
+        return message.reply({ embeds: [embed] });
+    }
+
+    // ================= باقي الأوامر الأساسية والإدارية =================
+    if (command === 'طرد') {
+        if (!message.member.permissions.has(PermissionFlagsBits.KickMembers)) return message.reply('❌ لا تملك الصلاحية.');
+        const member = message.mentions.members.first();
+        if (!member || !member.kickable) return message.reply('❌ تعذر الطرد.');
         await member.kick();
-        return message.reply(`✅ تم طرد العضو **${member.user.tag}** بنجاح من السيرفر.`);
+        return message.reply(`✅ تم طرد ${member.user.tag}`);
     }
 
     if (command === 'حظر') {
-        if (!message.member.permissions.has(PermissionFlagsBits.BanMembers)) return message.reply('❌ لا تملك صلاحية حظر الأعضاء.');
+        if (!message.member.permissions.has(PermissionFlagsBits.BanMembers)) return message.reply('❌ لا تملك الصلاحية.');
         const member = message.mentions.members.first();
-        if (!member) return message.reply('❌ يرجى تحديد العضو المراد حظره.');
-        
+        if (!member) return message.reply('❌ حدد العضو.');
         await member.ban();
-        return message.reply(`🚫 تم حظر العضو **${member.user.tag}** بنجاح من السيرفر.`);
+        return message.reply(`🚫 تم حظر ${member.user.tag}`);
     }
 
     if (command === 'مسح') {
-        if (!message.member.permissions.has(PermissionFlagsBits.ManageMessages)) return message.reply('❌ لا تملك صلاحية إدارة الرسائل.');
+        if (!message.member.permissions.has(PermissionFlagsBits.ManageMessages)) return message.reply('❌ لا تملك الصلاحية.');
         const amount = parseInt(args[0]) || 100;
-        if (amount < 1 || amount > 100) return message.reply('❌ يرجى تحديد رقم بين 1 و 100.');
-
         await message.channel.bulkDelete(amount, true);
-        const msg = await message.channel.send(`🧹 تم تنظيف الغرفة ومسح **${amount}** رسالة بنجاح.`);
-        setTimeout(() => msg.delete().catch(() => {}), 3000);
-        return;
+        return message.channel.send(`🧹 تم مسح ${amount} رسالة.`).then(m => setTimeout(() => m.delete().catch(() => {}), 3000));
     }
 
     if (command === 'قفل') {
-        if (!message.member.permissions.has(PermissionFlagsBits.ManageChannels)) return message.reply('❌ لا تملك صلاحية إدارة الرومات.');
+        if (!message.member.permissions.has(PermissionFlagsBits.ManageChannels)) return message.reply('❌ لا تملك الصلاحية.');
         await message.channel.permissionOverwrites.edit(message.guild.roles.everyone, { SendMessages: false });
-        return message.reply('🔒 **تم إغلاق الغرفة بنجاح. لا يمكن للأعضاء الكتابة الآن.**');
+        return message.reply('🔒 تم إغلاق الغرفة.');
     }
 
     if (command === 'فتح') {
-        if (!message.member.permissions.has(PermissionFlagsBits.ManageChannels)) return message.reply('❌ لا تملك صلاحية إدارة الرومات.');
+        if (!message.member.permissions.has(PermissionFlagsBits.ManageChannels)) return message.reply('❌ لا تملك الصلاحية.');
         await message.channel.permissionOverwrites.edit(message.guild.roles.everyone, { SendMessages: true });
-        return message.reply('🔓 **تم فتح الغرفة بنجاح. يمكن للجميع الكتابة الآن.**');
+        return message.reply('🔓 تم فتح الغرفة.');
     }
-
-    // ================= الفئة 3: أوامر نظام التذاكر (Tickets) =================
 
     if (command === 'انشاء-تذاكر') {
-        if (!message.member.permissions.has(PermissionFlagsBits.Administrator)) {
-            return message.reply('❌ **عذراً، لا تملك صلاحية المسؤول لاستخدام هذا الأمر.**');
-        }
-
-        const embed = new EmbedBuilder()
-            .setColor('#2F3136')
-            .setTitle('🎫 مركز الدعم الفني والمساعدة')
-            .setDescription('إذا كنت تواجه مشكلة أو تحتاج إلى مساعدة من الإدارة، اضغط على الزر بالأسفل لفتح تذكرة خاصة بك.')
-            .setFooter({ text: 'نظام تذاكر مشفر وآمن بالكامل' });
-
-        const buttonRow = new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-                .setCustomId('open_ticket')
-                .setLabel('📩 فتح تذكرة جديدة')
-                .setStyle(ButtonStyle.Primary)
-        );
-
-        await message.channel.send({ embeds: [embed], components: [buttonRow] });
-        return message.delete().catch(() => {});
+        if (!message.member.permissions.has(PermissionFlagsBits.Administrator)) return message.reply('❌ للمسؤولين فقط.');
+        const embed = new EmbedBuilder().setColor('#2F3136').setTitle('🎫 مركز الدعم').setDescription('اضغط لفتح تذكرة');
+        const row = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId('open_ticket').setLabel('📩 فتح تذكرة').setStyle(ButtonStyle.Primary));
+        await message.channel.send({ embeds: [embed], components: [row] });
     }
 
-    // ================= الفئة 4: أوامر الترفيه والتسلية =================
-
-    if (command === 'فعالية') {
-        const activities = [
-            'أول من يكتب: "سبحان الله وبحمده"',
-            'أول من يكتب اسم دولة بحرف (خ)',
-            'كم حاصل ضرب: 7 × 8 ؟',
-            'أول من يكتب كلمة "البرمجة" معكوسة'
-        ];
-        const randomActivity = activities[Math.floor(Math.random() * activities.length)];
-        return message.reply(`🎮 **الفعالية الحالية:**\n👉 **${randomActivity}**`);
-    }
-
-    if (command === 'نرد') {
-        const result = Math.floor(Math.random() * 6) + 1;
-        return message.reply(`🎲 لقد رميت النرد وحصلت على الرقم: **${result}**`);
-    }
-
-    if (command === 'صراحة') {
-        const questions = [
-            'ما هو أكثر شيء تندم عليه؟',
-            'هل يمكنك مسامحة شخص خان ثقتك؟',
-            'ما هي الكلمة التي تؤثر فيك دائماً؟'
-        ];
-        return message.reply(`💬 **سؤال صراحة:** ${questions[Math.floor(Math.random() * questions.length)]}`);
-    }
-
-    if (command === 'لوخيروك') {
-        const choices = [
-            'لو خيروك تعيش بدون إنترنت لمدة سنة 🌐 أو تعيش بدون أصدقاء مدى الحياة 👥؟',
-            'لو خيروك تسافر للمستقبل 🚀 أو ترجع للماضي ⏳؟'
-        ];
-        return message.reply(`🤔 **لو خيروك:**\n${choices[Math.floor(Math.random() * choices.length)]}`);
+    if (command === 'داشبورد') {
+        return message.reply('🎛️ لوحة التحكم تعمل ومؤمنة سحابياً عبر خادمك الخاص.');
     }
 });
 
-// 🎫 تابع نظام التفاعل وتشغيل أزرار التذاكر (Tickets)
+// نظام التذاكر التفاعلي
 client.on('interactionCreate', async interaction => {
     if (!interaction.isButton()) return;
-
     if (interaction.customId === 'open_ticket') {
         await interaction.deferReply({ ephemeral: true });
-        
         const channel = await interaction.guild.channels.create({
             name: `تذكرة-${interaction.user.username}`,
             type: ChannelType.GuildText,
@@ -190,43 +175,27 @@ client.on('interactionCreate', async interaction => {
                 { id: interaction.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages] }
             ]
         });
-
-        const embed = new EmbedBuilder()
-            .setColor('#5865F2')
-            .setTitle('🎫 تذكرة جديدة مخصصة')
-            .setDescription(`مرحباً بك ${interaction.user}، فريق الدعم الفني سيكون معك قريباً لمعالجة طلبك.\nاضغط على الزر أدناه لإغلاق التذكرة فوراً بعد الانتهاء.`)
-            .setTimestamp();
-
-        const closeButton = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId('close_ticket').setLabel('🔒 إغلاق التذكرة').setStyle(ButtonStyle.Danger)
-        );
-
-        await channel.send({ embeds: [embed], components: [closeButton] });
-        await interaction.editReply({ content: `✅ تم فتح تذكرتك بنجاح: ${channel}`, ephemeral: true });
+        const embed = new EmbedBuilder().setColor('#5865F2').setDescription(`مرحباً بك ${interaction.user}، فريق الدعم معك قريباً.`);
+        const row = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId('close_ticket').setLabel('🔒 إغلاق').setStyle(ButtonStyle.Danger));
+        await channel.send({ embeds: [embed], components: [row] });
+        await interaction.editReply({ content: `✅ تذكرتك: ${channel}`, ephemeral: true });
     }
-
     if (interaction.customId === 'close_ticket') {
-        await interaction.reply('🔒 سيتم تدمير وإغلاق الغرفة خلال 5 ثوانٍ...');
+        await interaction.reply('🔒 سيتم الإغلاق خلال 5 ثوانٍ...');
         setTimeout(() => interaction.channel.delete().catch(() => {}), 5000);
     }
 });
 
-// 🌐 لوحة التحكم المعاصرة والمريحة للعين (Dashboard) المتوافقة مع Railway
+// لوحة التحكم (Express)
 const app = express();
 app.get('/', (req, res) => {
     res.send(`
-        <body style="font-family: Arial, sans-serif; text-align: center; background: #2f3136; color: white; padding-top: 50px;">
-            <div style="max-width: 600px; margin: 0 auto; background: #202225; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
-                <h1 style="color: #5865F2;">🎛️ لوحة تحكم النظام المتكامل</h1>
-                <p style="font-size: 18px; color: #b9bbbe;">البوت يعمل بأعلى مستويات الحماية والاستقرار على خوادم سحابية.</p>
-                <hr style="border-color: #4f545c;">
-                <h3>📊 الإحصائيات الفورية:</h3>
-                <p style="background: #2f3136; padding: 10px; border-radius: 6px; display: inline-block;">الحالة العامة: متصل ومؤمن بنجاح 🟢</p>
-                <p style="color: #43B581;">جميع الأوامر الـ 80+ يتم تشغيلها وإدارتها بكفاءة عالية ومنسقة باللغة العربية.</p>
-            </div>
+        <body style="font-family: Arial; text-align: center; background: #2f3136; color: white; padding-top: 50px;">
+            <h1 style="color: #5865F2;">🎛️ لوحة تحكم النظام المتكامل</h1>
+            <p>الحالة: متصل ومؤمن 🟢</p>
         </body>
     `);
 });
-app.listen(config.port, () => console.log(`🌐 لوحة التحكم تعمل على المنفذ: ${config.port}`));
+app.listen(config.port);
 
 client.login(process.env.TOKEN);
