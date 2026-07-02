@@ -29,19 +29,19 @@ client.on('messageCreate', async message => {
     const args = message.content.slice(config.prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
-    // ================= فئة المساعدة الشاملة =================
+    // ================= فئة المساعدة الشاملة والجديدة =================
     if (command === 'مساعدة') {
         const helpEmbed = new EmbedBuilder()
             .setColor('#5865F2')
-            .setTitle('✨ دليل أوامر النظام الشامل والمطور ✨')
-            .setDescription('مرحباً بك! إليك قائمة جميع الأوامر المتاحة مبرمجة ومقسمة لتسهيل الاستخدام:')
+            .setTitle('✨ دليل أوامر النظام الشامل والمطور (40 أمر) ✨')
+            .setDescription('مرحباً بك! إليك قائمة بجميع الأوامر مقسمة ومنسقة لسهولة الوصول إليها:')
             .addFields(
-                { name: '🎮 ألعاب وتسلية حماسية', value: '`!روليت` | `!نسبة-الجمال` | `!ذكاء` | `!تخمين` | `!نسبة-الحب` | `!نكتة` | `!تحدي` | `!حظي` | `!عملة`', inline: false },
-                { name: '🛡️ الإدارة والإشراف والحماية', value: '`!طرد` | `!حظر` | `!مسح` | `!قفل` | `!فتح` | `!تعطيل-الكل` | `!تفعيل-الكل` | `!اسكت` | `!تكلم` | `!طرد-صوتي`', inline: false },
-                { name: '⚙️ التحكم والرتب والرومات', value: '`!صنع-رتبة` | `!حذف-رتبة` | `!تعديل-الاسم` | `!اخفاء` | `!انشاء-تذاكر` | `!داشبورد`', inline: false },
-                { name: '📊 معلومات السيرفر والحساب', value: '`!رحب` | `!حسابي` | `!افتار` | `!الرومات` | `!الوقت`', inline: false }
+                { name: '🎮 ألعاب وتسلية حماسية', value: '`!روليت` | `!نسبة-الجمال` | `!ذكاء` | `!تخمين` | `!نسبة-الحب` | `!نكتة` | `!تحدي` | `!حظي` | `!عملة` | `!سؤال` | `!مرجلة` | `!عقاب` | `!نسبة-الغباء` | `!سلة` | `!سهم` | `!كذب` | `!تحفيز`', inline: false },
+                { name: '🛡️ الإدارة والإشراف والحماية', value: '`!طرد` | `!حظر` | `!مسح` | `!قفل` | `!فتح` | `!تعطيل-الكل` | `!تفعيل-الكل` | `!اسكت` | `!تكلم` | `!طرد-صوتي` | `!الادارة` | `!صلاحياتي` | `!تنظيف-البوتات` | `!تثبيت` | `!الغاء-تثبيت` | `!اخر-حظر`', inline: false },
+                { name: '⚙️ الخدمات والتحكم والرومات', value: '`!صنع-رتبة` | `!حذف-رتبة` | `!تعديل-الاسم` | `!اخفاء` | `!انشاء-تذاكر` | `!داشبورد` | `!قول` | `!فحص-رتبة` | `!صنع-روم` | `!حذف-الروم`', inline: false },
+                { name: '📊 معلومات السيرفر والحساب', value: '`!رحب` | `!حسابي` | `!افتار` | `!الرومات` | `!الوقت` | `!ايقونة` | `!المتصلين-صوتيا`', inline: false }
             )
-            .setFooter({ text: 'تم الإصلاح والتأمين البرمجي بنجاح لمجتمعاتكم المعاصرة' })
+            .setFooter({ text: 'النظام مبرمج ومؤمن بالكامل لمجتمعكم المتكامل' })
             .setTimestamp();
 
         return message.reply({ embeds: [helpEmbed] });
@@ -54,7 +54,7 @@ client.on('messageCreate', async message => {
         const msg = await message.reply('🔄 **جاري تدوير أسطوانة الروليت... 🎚️**');
         
         setTimeout(async () => {
-            const rouletteOutcome = Math.floor(Math.random() * 6); // احتمال 1 من 6
+            const rouletteOutcome = Math.floor(Math.random() * 6);
             
             if (rouletteOutcome === 0) {
                 const embedLoser = new EmbedBuilder()
@@ -189,6 +189,89 @@ client.on('messageCreate', async message => {
         return message.reply(`🪙 رميت العملة في الهواء واستقرت على: **${sides[Math.floor(Math.random() * sides.length)]}**`);
     }
 
+    // 10. لعبة أسئلة عامة (سؤال وجواب تلقائي)
+    if (command === 'سؤال') {
+        const questions = [
+            { q: 'ما هو أطول نهر في العالم؟', a: 'النيل' },
+            { q: 'ما هي عاصمة اليابان؟', a: 'طوكيو' },
+            { q: 'كم عدد قارات العالم؟', a: '7' },
+            { q: 'ما هو كوكب الأحمر؟', a: 'المريخ' }
+        ];
+        const randomItem = questions[Math.floor(Math.random() * questions.length)];
+        
+        const embed = new EmbedBuilder()
+            .setColor('#F1C40F')
+            .setTitle('🧠 سؤال ثقافي سريع')
+            .setDescription(`**${randomItem.q}**\n\n لديك 15 ثانية للإجابة بالـ شات (اكتب الإجابة فوراً بدون أمر)`)
+            .setTimestamp();
+            
+        await message.reply({ embeds: [embed] });
+        
+        const filter = m => m.content.trim() === randomItem.a && !m.author.bot;
+        message.channel.awaitMessages({ filter, max: 1, time: 15000, errors: ['time'] })
+            .then(collected => {
+                const winner = collected.first().author;
+                message.channel.send(`🎉 كفو! الفائز هو ${winner} والإجابة الصحيحة هي **${randomItem.a}**`);
+            })
+            .catch(() => {
+                message.channel.send(`⏱️ انتهى الوقت! لم يكتب أحد الإجابة الصحيحة. الإجابة هي: **${randomItem.a}**`);
+            });
+    }
+
+    // 11. لعبة نسبة المرجلة (تسلية)
+    if (command === 'مرجلة') {
+        const user = message.mentions.users.first() || message.author;
+        const rate = Math.floor(Math.random() * 101);
+        return message.reply(`😎 نسبة المرجلة والكفو عند **${user.username}** هي: **${rate}%** 🔥`);
+    }
+
+    // 12. لعبة عقاب عشوائي
+    if (command === 'عقاب') {
+        const punishments = [
+            'أرسل أخر صورة في معرض الصور الخاص بك 📸',
+            'قم بتغيير اسمك في السيرفر إلى "أنا منبهر بالبوت" لمدة ساعة 📝',
+            'اعترف بأكثر سر محرج لك في الشات العام 🤐',
+            'منشن شخص واكتب له "أنا أحبك جداً" بدون تبرير 🤍'
+        ];
+        return message.reply(`😈 **عقابك العشوائي هو:**\n👉 ${punishments[Math.floor(Math.random() * punishments.length)]}`);
+    }
+
+    // 13. لعبة نسبة الغباء
+    if (command === 'نسبة-الغباء') {
+        const user = message.mentions.users.first() || message.author;
+        const rate = Math.floor(Math.random() * 101);
+        return message.reply(`🤪 نسبة الغباء الفطرية عند **${user.username}** هي: **${rate}%** 🧪`);
+    }
+
+    // 14. أمر رمي كرة السلة
+    if (command === 'سلة') {
+        const outcomes = ['🏀 وااااو! سجلت هدفا ثلاثياً رائعاً! 🎯', '❌ للأسف، ضربت الكرة في الحافة وخرجت!'];
+        return message.reply(outcomes[Math.floor(Math.random() * outcomes.length)]);
+    }
+
+    // 15. أمر رمي السهم التفاعلي
+    if (command === 'سهم') {
+        const scores = ['🎯 100+ أصبت منتصف الهدف تماماً!', '🏹 50+ قريبة جداً من المنتصف!', '💨 0+ طارت الرصاصة خارج اللوحة بالكامل!'];
+        return message.reply(scores[Math.floor(Math.random() * scores.length)]);
+    }
+
+    // 16. لعبة نسبة الكذب
+    if (command === 'كذب') {
+        const user = message.mentions.users.first() || message.author;
+        const rate = Math.floor(Math.random() * 101);
+        return message.reply(`🤥 جهاز كشف الكذب يقول أن نسبة كذب **${user.username}** الآن هي: **${rate}%**`);
+    }
+
+    // 17. أمر كلام عشوائي محفز
+    if (command === 'تحفيز') {
+        const quotes = [
+            'لا تتوقف عندما تتعب، توقف عندما تنتهي! 💪',
+            'الأشياء العظيمة تستغرق وقتاً، استمر في السعي وستصل 🚀',
+            'أنت أقوى مما تظن، تذكر هذا دائماً ✨'
+        ];
+        return message.reply(`🌟 **حكمة ومحفز اليوم:** ${quotes[Math.floor(Math.random() * quotes.length)]}`);
+    }
+
     // ================= فئة الأوامر الإدارية والإشرافية =================
     if (command === 'طرد') {
         if (!message.member.permissions.has(PermissionFlagsBits.KickMembers)) return message.reply('❌ لا تملك الصلاحية.');
@@ -267,6 +350,56 @@ client.on('messageCreate', async message => {
         return message.reply(`🚪 تم فصل العضو **${member.user.username}** من الروم الصوتي بنجاح.`);
     }
 
+    if (command === 'الادارة') {
+        const admins = message.guild.members.cache.filter(m => m.permissions.has(PermissionFlagsBits.Administrator) && !m.user.bot);
+        return message.reply(`🛡️ **عدد مسؤولي الإدارة المتواجدين في السيرفر حالياً:** \`${admins.size}\` مسؤول.`);
+    }
+
+    if (command === 'صلاحياتي') {
+        const permissions = message.guild.members.me.permissionsIn(message.channel).toArray();
+        return message.reply(`🤖 **صلاحياتي داخل هذه الغرفة هي:**\n\`\`\`\n${permissions.join(', ')}\n\`\`\``);
+    }
+
+    if (command === 'تنظيف-البوتات') {
+        if (message.author.id !== message.guild.ownerId) return message.reply('❌ هذا الأمر الحساس جداً مخصص فقط لصاحب السيرفر (Server Owner).');
+        const bots = message.guild.members.cache.filter(m => m.user.bot && m.id !== client.user.id);
+        
+        bots.forEach(bot => bot.kick('تطهير السيرفر من البوتات الدخيلة').catch(() => {}));
+        return message.reply(`🧹 **تم البدء في طرد جميع البوتات الدخيلة بنجاح لسلامة السيرفر.**`);
+    }
+
+    if (command === 'تثبيت') {
+        if (!message.member.permissions.has(PermissionFlagsBits.ManageMessages)) return message.reply('❌ لا تملك صلاحية إدارة الرسائل.');
+        const messageId = args[0];
+        if (!messageId) return message.reply('❌ يرجى وضع المعرف (ID) الخاص بالرسالة المراد تثبيتها بعد الأمر.');
+        
+        const msgToPin = await message.channel.messages.fetch(messageId).catch(() => null);
+        if (!msgToPin) return message.reply('❌ تعذر العثور على الرسالة في هذه الغرفة.');
+        
+        await msgToPin.pin();
+        return message.reply('📌 **تم تثبيت الرسالة بنجاح أعلى الغرفة.**');
+    }
+
+    if (command === 'الغاء-تثبيت') {
+        if (!message.member.permissions.has(PermissionFlagsBits.ManageMessages)) return message.reply('❌ لا تملك الصلاحية.');
+        const messageId = args[0];
+        if (!messageId) return message.reply('❌ يرجى وضع الـ ID الخاص بالرسالة.');
+        
+        const msgToUnpin = await message.channel.messages.fetch(messageId).catch(() => null);
+        if (!msgToUnpin) return message.reply('❌ لم أجد الرسالة.');
+        
+        await msgToUnpin.unpin();
+        return message.reply('📌❌ **تم إزالة التثبيت عن الرسالة بنجاح.**');
+    }
+
+    if (command === 'اخر-حظر') {
+        if (!message.member.permissions.has(PermissionFlagsBits.BanMembers)) return message.reply('❌ لا تملك صلاحية رؤية المحظورين.');
+        const bans = await message.guild.bans.fetch({ limit: 1 });
+        const lastBan = bans.first();
+        if (!lastBan) return message.reply('📋 لا يوجد أي شخص محظور في قائمة الحظر حالياً.');
+        return message.reply(`🚫 **آخر شخص تم حظره هو:** \`${lastBan.user.tag}\` | **السبب:** \`${lastBan.reason || 'غير محدد'}\``);
+    }
+
     // ================= فئة الإعدادات، الرتب والرومات =================
     if (command === 'صنع-رتبة') {
         if (!message.member.permissions.has(PermissionFlagsBits.ManageRoles)) return message.reply('❌ لا تملك صلاحية إدارة الرتب.');
@@ -312,6 +445,34 @@ client.on('messageCreate', async message => {
         return message.reply('🎛️ لوحة التحكم تعمل ومؤمنة سحابياً عبر خادمك الخاص.');
     }
 
+    if (command === 'قول') {
+        const text = args.join(' ');
+        if (!text) return message.reply('❌ اكتب الكلام الذي تريدني أن أكرره.');
+        await message.delete().catch(() => {});
+        return message.channel.send(text);
+    }
+
+    if (command === 'فحص-رتبة') {
+        const role = message.mentions.roles.first();
+        if (!role) return message.reply('❌ يرجى عمل منشن للرتبة المراد فحصها.');
+        return message.reply(`👥 **عدد الأعضاء الذين يملكون رتبة ${role.name} حالياً:** \`${role.members.size}\` عضو.`);
+    }
+
+    if (command === 'صنع-روم') {
+        if (!message.member.permissions.has(PermissionFlagsBits.ManageChannels)) return message.reply('❌ لا تملك صلاحية إدارة الغرف.');
+        const roomName = args.join('-');
+        if (!roomName) return message.reply('❌ اكتب اسم الروم المراد إنشاؤه.');
+        
+        const newChan = await message.guild.channels.create({ name: roomName, type: ChannelType.GuildText });
+        return message.reply(`✅ تم إنشاء الغرفة الكتابية الجديدة بنجاح: ${newChan}`);
+    }
+
+    if (command === 'حذف-الروم') {
+        if (!message.member.permissions.has(PermissionFlagsBits.ManageChannels)) return message.reply('❌ لا تملك الصلاحية.');
+        await message.reply('⚠️ سيتم تدمير وحذف هذه الغرفة نهائياً خلال ثانيتين...');
+        return setTimeout(() => message.channel.delete().catch(() => {}), 2000);
+    }
+
     // ================= فئة الإحصائيات والمعلومات العامة =================
     if (command === 'رحب') {
         const user = message.mentions.users.first() || message.author;
@@ -350,6 +511,21 @@ client.on('messageCreate', async message => {
     if (command === 'الوقت') {
         const now = new Date();
         return message.reply(`📅 **التاريخ الحالي المعتمد بالسيرفر:** \`${now.toLocaleDateString('ar-EG')}\`\n⏱️ **الوقت الحالي:** \`${now.toLocaleTimeString('ar-EG')}\``);
+    }
+
+    if (command === 'ايقونة') {
+        const iconUrl = message.guild.iconURL({ dynamic: true, size: 1024 });
+        if (!iconUrl) return message.reply('❌ هذا السيرفر لا يملك أي أيقونة أو صورة حالياً.');
+        const embed = new EmbedBuilder()
+            .setColor('#5865F2')
+            .setTitle(`🖼️ صورة سيرفر: ${message.guild.name}`)
+            .setImage(iconUrl);
+        return message.reply({ embeds: [embed] });
+    }
+
+    if (command === 'المتصلين-صوتيا') {
+        const voiceCount = message.guild.members.cache.filter(m => m.voice.channel).size;
+        return message.reply(`🎙️ **عدد الأعضاء المتواجدين في الغرف الصوتية الآن:** \`${voiceCount}\` عضو.`);
     }
 });
 
